@@ -5,8 +5,10 @@ date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Vignette Title}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include = FALSE}
@@ -17,7 +19,7 @@ knitr::opts_chunk$set(
 ```
 
 ```{r}
-devtools::install_github("ian-flores/mapPR")
+# devtools::install_github("ian-flores/mapPR")
 library(mapPR)
 ```
 
@@ -28,12 +30,40 @@ library(jsonlite)
 ```
 
 ```{r}
-(barrios@data <- barrios@data %>%
-    left_join(poverty_barrios_data, by = c('COUSUB' = 'geo_id')))
+barrios@data <- barrios@data %>%
+    left_join(poverty_barrios_data, by = c('COUSUB' = 'geo_id'))
+
+#knitr::kable(barrios@data)
 ```
 
-```{r}
+```{r, fig.width=7.25, fig.height=6}
+leaflet(barrios) %>%
+    addTiles() %>%
+    addPolygons()
+```
+
+```{r, fig.width=7.25, fig.height=6}
 pal <- colorBin('YlOrRd', domain = barrios@data$below_poverty)
+```
+
+```{r, fig.width=7.25, fig.height=6}
+leaflet(barrios) %>%
+    addTiles() %>%
+    addPolygons(fillColor = ~pal(below_poverty),
+                weight = 2, 
+                color = 'white', 
+                opacity = 1, 
+                dashArray = '1',
+                fillOpacity = 0.7)
+```
+
+```{r, fig.width=7.25, fig.height=6}
+labels <- sprintf(
+    "<strong>Barrio: </strong> %s </br> <strong>Percentage Below Poverty: </strong> %g",
+    barrios@data$NAME, barrios@data$below_poverty
+) %>%
+    lapply(htmltools::HTML)
+
 
 leaflet(barrios) %>%
     addTiles() %>%
@@ -41,6 +71,12 @@ leaflet(barrios) %>%
                 weight = 2, 
                 color = 'white', 
                 opacity = 1, 
-                dashArray = '3',
-                fillOpacity = 0.7)
+                dashArray = '1',
+                fillOpacity = 0.7,
+                highlight = highlightOptions(
+                    weight = 5, 
+                    color = "#666",
+                    dashArray = "",
+                    fillOpacity = 0.7, bringToFront = TRUE), 
+                label = labels)
 ```
