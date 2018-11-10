@@ -1,0 +1,46 @@
+---
+title: "How to use mapPR with Leaflet"
+author: "Ian Flores Siaca"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r}
+devtools::install_github("ian-flores/mapPR")
+library(mapPR)
+```
+
+```{r}
+library(tidyverse)
+library(leaflet)
+library(jsonlite)
+```
+
+```{r}
+(barrios@data <- barrios@data %>%
+    left_join(poverty_barrios_data, by = c('COUSUB' = 'geo_id')))
+```
+
+```{r}
+pal <- colorBin('YlOrRd', domain = barrios@data$below_poverty)
+
+leaflet(barrios) %>%
+    addTiles() %>%
+    addPolygons(fillColor = ~pal(below_poverty),
+                weight = 2, 
+                color = 'white', 
+                opacity = 1, 
+                dashArray = '3',
+                fillOpacity = 0.7)
+```
