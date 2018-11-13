@@ -15,3 +15,8 @@ Don't install this package yet. It is still in very early development and won't 
         - fUNCTIONS DONE FOR November 30
 - Add Transit data
     - Functions done for November 26
+
+
+## other 
+Create a repo containing all the data used by the mapPR package under the OpenDataPR organization in GitHub
+    - Done for November 19
